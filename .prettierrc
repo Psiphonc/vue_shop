@@ -1,0 +1,4 @@
+{
+  "eslintIntegration": true,
+  "eslint.autoFixOnSave": true
+}
