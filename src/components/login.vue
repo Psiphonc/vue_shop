@@ -8,7 +8,12 @@
       <!-- 登陆表单区 -->
       <!-- ref属性表示该组件的应用名 可以随便起 -->
       <!-- 添加了这个属性后就可以在script代码中获取该组件了 -->
-      <el-form ref="loginFormRef" class="login-form" :model="loginForm" :rules="loginFormRules">
+      <el-form
+        ref="loginFormRef"
+        class="login-form"
+        :model="loginForm"
+        :rules="loginFormRules"
+      >
         <!-- 用户名 -->
         <el-form-item prop="username">
           <el-input
@@ -39,7 +44,7 @@
 
 <script>
 export default {
-  data: function () {
+  data: function() {
     return {
       // 登陆表单的数据绑定对象
       loginForm: {
@@ -50,7 +55,12 @@ export default {
       loginFormRules: {
         username: [
           { require: true, message: '请输入用户名', trigger: 'blur' },
-          { min: 3, max: 10, message: '用户名长度为3-10个字符', trigger: 'blur' }
+          {
+            min: 3,
+            max: 10,
+            message: '用户名长度为3-10个字符',
+            trigger: 'blur'
+          }
         ],
         password: [
           { require: true, message: '请输入密码', trigger: 'blur' },
@@ -60,11 +70,11 @@ export default {
     }
   },
   methods: {
-    resetLoginForm: function () {
+    resetLoginForm: function() {
       // 通过内置属性$ref获取模版中设置过ref属性的子组件
       this.$refs.loginFormRef.resetFields()
     },
-    login: function () {
+    login: function() {
       // validate方法可以验证表单内容，接收一个cb函数，参数是校验结果
       this.$refs.loginFormRef.validate(async valid => {
         if (!valid) return

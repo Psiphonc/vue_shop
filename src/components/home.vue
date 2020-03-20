@@ -7,15 +7,14 @@
 <script>
 export default {
   methods: {
-    logout: function () {
+    logout: function() {
       // 清空token
       window.sessionStorage.clear()
       // 重定向到登陆页
-      this.$router.push('/login')
+      this.$router.push('login')
     }
   }
 }
 </script>
 
-<style lang="less" scoped>
-</style>
+<style lang="less" scoped></style>
