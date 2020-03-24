@@ -10,10 +10,7 @@
     <el-card>
       <!-- 添加角色按钮区 -->
       <el-row>
-        <el-button
-          type='primary'
-          @click="showAddRoleDialog"
-        >添加角色</el-button>
+        <el-button type='primary'>添加角色</el-button>
       </el-row>
       <el-table
         :data="roles"
@@ -95,7 +92,6 @@
               type="danger"
               size="mini"
               icon="el-icon-delete"
-              @click="deleteRole(scope.row)"
             >删除</el-button>
             <el-button
               round
@@ -138,9 +134,8 @@
       </el-dialog>
       <!-- 编辑角色对话框 -->
       <el-dialog
-        :title="addRoleFlag? '添加角色' : '编辑角色'"
+        title="编辑角色"
         :visible.sync="editRoleDialogVisable"
-        @close="editingRole = {}"
         width="50%"
       >
         <!-- 编辑角色对话框主体区域 -->
@@ -221,7 +216,6 @@ export default {
       this.roles = res.data
     },
     removeRightByid: async function (role, rightId) {
-      this.addRoleFlag = false
       console.log(role, rightId)
       const confirmRet = await this.$confirm('此操作会回收该用户权限，是否继续？',
         '提示',
@@ -275,46 +269,17 @@ export default {
       this.getRoles()
     },
     showEditDialog: function (role) {
-      this.addRoleFlag = false
       this.editRoleDialogVisable = true
       const { id, roleName, roleDesc } = role
       this.editingRole = { id, roleName, roleDesc }
     },
     submitRole: async function () {
-      const isValid = await this.$refs.editRoleFormRef.validate().catch(err => err)
-      if (!isValid) return
-      if (this.addRoleFlag) {
-        this.createRole()
-        return
-      }
       const { id, roleName, roleDesc } = this.editingRole
       const { data: res } = await this.$http.put(`roles/${id}`, { roleName, roleDesc })
       if (res.meta.status !== 200) this.$message.error('修改角色信息失败')
       this.getRoles()
       this.editRoleDialogVisable = false
-    },
-    showAddRoleDialog: function () {
-      this.addRoleFlag = true
-      this.editRoleDialogVisable = true
-    },
-    createRole: async function () {
-      const { roleName, roleDesc } = this.editingRole
-      const { data: res } = await this.$http.post('roles/', { roleName, roleDesc })
-      console.log(res)
-      if (res.meta.status !== 201) this.$message.error('添加角色失败')
-      this.getRoles()
-      this.editRoleDialogVisable = false
-    },
-    deleteRole: async function (role) {
-      const ret = await this.$confirm('此操作将永久删除角色, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).catch(err => err)
-      if (ret !== 'confirm') return this.$message.info('已经取消了删除')
-      const { data: res } = await this.$http.delete(`roles/${role.id}`)
-      if (res.meta.status !== 200) this.$message.error('删除角色失败')
-      this.getRoles()
+      this.editingRole = {}
     }
   }
 }
