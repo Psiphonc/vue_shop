@@ -17,7 +17,7 @@
       >退出</el-button>
     </el-header>
     <!-- 页面主体区域 -->
-    <el-container>
+    <el-container style="height: 100%">
       <!-- 侧边栏 -->
       <el-aside :width="menuWidth">
         <div

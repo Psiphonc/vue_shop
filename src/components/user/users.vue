@@ -112,6 +112,7 @@
                 icon="el-icon-s-tools"
                 circle
                 size="mini"
+                @click="fillRoleForm(scope.row)"
               ></el-button>
             </el-tooltip>
           </template>
@@ -233,6 +234,51 @@
         >确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 分配角色对话框 -->
+    <el-dialog
+      title="分配角色"
+      :visible.sync="allotRoleDialogVisable"
+      width="50%"
+    >
+      <!-- 分配角色对话框主体部分 -->
+      <el-form
+        :inline="true"
+        :model="userInfo"
+      >
+        <el-form-item label="用户名">
+          <el-input
+            v-model="userInfo.username"
+            disabled
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="角色">
+          <el-select v-model="selectedRoleId">
+            <el-option
+              v-for="role in roles"
+              :key="role.id"
+              :label="role.roleName"
+              :value="role.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <div class="role-desc">
+          <span>角色描述:</span>
+          <p>{{roleDesc}}</p>
+        </div>
+      </el-form>
+      <!-- 分配角色对话框按钮区域 -->
+      <span
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button @click="allotRoleDialogVisable = false">取 消</el-button>
+        <el-button
+          type="primary"
+          @click="allotRole"
+          :disabled="isRoleChanged ? false : true"
+        >确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -302,11 +348,21 @@ export default {
           { required: true, message: '请输入手机', trigger: 'blur' },
           { validator: checkMobile, trigger: 'blur' }
         ]
-      }
+      },
+      allotRoleDialogVisable: false,
+      // 正在被编辑的角色信息
+      userInfo: {},
+      // 所有列表
+      roles: [],
+      // 选中的角色
+      selectedRoleId: '',
+      // 初始角色
+      originSelectedRoleId: ''
     }
   },
   created: function () {
     this.getUserList()
+    this.getRoleList()
   },
   methods: {
     getUserList: async function () {
@@ -314,6 +370,11 @@ export default {
       if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
       this.users = res.data.users
       this.userCnt = res.data.total
+    },
+    getRoleList: async function () {
+      const { data: res } = await this.$http.get('roles')
+      if (res.meta.status !== 200) return this.$message.error('获取角色列表失败')
+      this.roles = res.data
     },
     // 处理pagesize改变
     handleSizeChange: function (newSize) {
@@ -399,10 +460,39 @@ export default {
         this.$message.success('删除成功')
         this.getUserList()
       }
+    },
+    fillRoleForm: async function (row) {
+      this.userInfo = row
+      // 获取所有角色
+      const rawRole = this.roles.find(item => item.roleName === this.userInfo.role_name)
+      if (rawRole) this.selectedRoleId = rawRole.id
+      else this.selectedRoleId = ''
+      this.originSelectedRoleId = this.selectedRoleId
+      this.allotRoleDialogVisable = true
+    },
+    allotRole: async function () {
+      const { data: res } = await this.$http.put(`users/${this.userInfo.id}/role`, { rid: this.selectedRoleId })
+      console.log(res)
+      if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
+      this.$message.success('分配角色成功')
+      this.getUserList()
+      this.allotRoleDialogVisable = false
+    }
+  },
+  computed: {
+    roleDesc: function () {
+      const idx = this.roles.findIndex(item => item.id === this.selectedRoleId)
+      if (idx < 0) return ''
+      return this.roles[idx].roleDesc
+    },
+    isRoleChanged: function () {
+      return !(this.originSelectedRoleId === this.selectedRoleId)
     }
   }
 }
 </script>
-
 <style lang="less" scoped>
+.role-desc > p {
+  text-indent: 2em;
+}
 </style>
