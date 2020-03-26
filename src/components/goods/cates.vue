@@ -4,15 +4,17 @@
     <el-breadcrumb separator="/">
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item>商品管理</el-breadcrumb-item>
-      <el-breadcrumb-item>商品分类列表</el-breadcrumb-item>
+      <el-breadcrumb-item>商品分类</el-breadcrumb-item>
     </el-breadcrumb>
     <!-- 卡片视图 -->
     <el-card>
       <el-row>
         <el-col>
-          <el-button type="primary" size="mini" @click="showAddCateDialog"
-            >添加分类</el-button
-          >
+          <el-button
+            type="primary"
+            size="mini"
+            @click="showAddCateDialog"
+          >添加分类</el-button>
         </el-col>
       </el-row>
       <!-- 表格 -->
@@ -34,20 +36,28 @@
             v-if="slotProps.row.cat_deleted === true"
             style="color: lightgreen;"
           ></i>
-          <i class="el-icon-close" v-else style="color: red;"></i>
+          <i
+            class="el-icon-close"
+            v-else
+            style="color: red;"
+          ></i>
         </template>
         <!-- 级别列插槽 -->
         <template v-slot:level="slotProps">
-          <el-tag type="info" size="mini" v-if="slotProps.row.cat_level === 0"
-            >一级</el-tag
-          >
-          <el-tag size="mini" v-if="slotProps.row.cat_level === 1">二级</el-tag>
+          <el-tag
+            type="info"
+            size="mini"
+            v-if="slotProps.row.cat_level === 0"
+          >一级</el-tag>
+          <el-tag
+            size="mini"
+            v-if="slotProps.row.cat_level === 1"
+          >二级</el-tag>
           <el-tag
             type="success"
             size="mini"
             v-if="slotProps.row.cat_level === 2"
-            >三级</el-tag
-          >
+          >三级</el-tag>
         </template>
         <template v-slot:operation="slotProps">
           <!-- 修改按钮 -->
@@ -83,7 +93,10 @@
         </template>
       </tree-table>
       <!-- 分页 -->
-      <el-row type="flex" justify="center">
+      <el-row
+        type="flex"
+        justify="center"
+      >
         <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
@@ -108,7 +121,10 @@
         ref="addCateFormRef"
         label-width="100px"
       >
-        <el-form-item label="分类名称" prop="cat_name">
+        <el-form-item
+          label="分类名称"
+          prop="cat_name"
+        >
           <el-input v-model="addCateForm.cat_name"></el-input>
         </el-form-item>
         <el-form-item label="父级分类">
@@ -121,9 +137,15 @@
           ></el-cascader>
         </el-form-item>
       </el-form>
-      <span slot="footer" class="dialog-footer">
+      <span
+        slot="footer"
+        class="dialog-footer"
+      >
         <el-button @click="ddCateDialogVisable = false">取 消</el-button>
-        <el-button type="primary" @click="addCate">确 定</el-button>
+        <el-button
+          type="primary"
+          @click="addCate"
+        >确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -131,7 +153,7 @@
 
 <script>
 export default {
-  data: function() {
+  data: function () {
     return {
       // 查询参数
       queryParams: {
@@ -194,11 +216,11 @@ export default {
       selectedKeys: []
     }
   },
-  created: function() {
+  created: function () {
     this.getCates()
   },
   methods: {
-    getCates: async function() {
+    getCates: async function () {
       const { data: res } = await this.$http.get('categories', {
         params: this.queryParams
       })
@@ -208,19 +230,19 @@ export default {
       this.cates = res.data.result
       this.pageCount = res.data.total
     },
-    handleSizeChange: function(newSize) {
+    handleSizeChange: function (newSize) {
       this.queryParams.pagesize = newSize
       this.getCates()
     },
-    handleCurrentChange: function(newPage) {
+    handleCurrentChange: function (newPage) {
       this.queryParams.pagenum = newPage
       this.getCates()
     },
-    showAddCateDialog: function() {
+    showAddCateDialog: function () {
       this.addCateDialogVisable = true
       this.getParentCates()
     },
-    getParentCates: async function() {
+    getParentCates: async function () {
       const { data: res } = await this.$http.get('categories', {
         params: { type: 2 }
       })
@@ -229,7 +251,7 @@ export default {
       }
       this.parentCates = res.data
     },
-    parentCateChange: function() {
+    parentCateChange: function () {
       if (this.selectedKeys.length <= 0) {
         this.addCateForm.cat_level = 0
         this.addCateForm.cat_pid = 0
@@ -241,11 +263,11 @@ export default {
       this.addCateForm.cat_level = this.selectedKeys.length
     },
     // 关闭对话框就清空表单
-    addCateFormClose: function() {
+    addCateFormClose: function () {
       this.$refs.addCateFormRef.resetFields()
       this.selectedKeys.length = 0
     },
-    addCate: function() {
+    addCate: function () {
       this.$refs.addCateFormRef.validate(async valid => {
         if (!valid) return
         const { data: res } = await this.$http.post(
