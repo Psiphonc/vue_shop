@@ -39,6 +39,8 @@ import {
   Upload,
   Image
 } from 'element-ui'
+import Timeline from './timeline'
+import TimelineItem from './timeline-item'
 
 // element-ui的message属性需要挂载到Vue上
 Vue.prototype.$message = Message
@@ -79,3 +81,5 @@ Vue.use(Checkbox)
 Vue.use(CheckboxGroup)
 Vue.use(Upload)
 Vue.use(Image)
+Vue.use(Timeline)
+Vue.use(TimelineItem)
